@@ -60,6 +60,7 @@ struct Farm: Identifiable, Hashable {
     let farmer: Farmer
     let availability: [DateRange]          // Windows when the farm is accepting volunteers
     let signups: [VolunteerSignup]         // Who signed up and when
+    let imageName: String                  // Asset image name for the farm
 
     // Helper for MapKit
     var location: CLLocationCoordinate2D { coordinate }
@@ -147,12 +148,13 @@ extension Farm {
                 SampleData.range(daysFromNow: -2, length: 14),
                 SampleData.range(daysFromNow: 30, length: 10)
             ],
-            signups: SampleData.signups.filter { $0.farmID == "farm-galilee" }
+            signups: SampleData.signups.filter { $0.farmID == "farm-galilee" },
+            imageName: "IMG_8127"
         ),
         Farm(
             id: "farm-negev",
             name: "Negev Fields",
-            description: "Date palms and vegetables near Be’er Sheva.",
+            description: "Date palms and vegetables near Be'er Sheva.",
             coordinate: CLLocationCoordinate2D(latitude: 31.245, longitude: 34.791),
             volunteersNeeded: 8,
             tasks: ["Pick dates", "Weed beds", "Pack produce"],
@@ -160,7 +162,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: -1, length: 21)
             ],
-            signups: SampleData.signups.filter { $0.farmID == "farm-negev" }
+            signups: SampleData.signups.filter { $0.farmID == "farm-negev" },
+            imageName: "IMG_0209"
         ),
         Farm(
             id: "farm-sharon",
@@ -173,7 +176,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: 5, length: 12)
             ],
-            signups: []
+            signups: [],
+            imageName: "IMG_7782"
         ),
         Farm(
             id: "farm-golan",
@@ -186,7 +190,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: 20, length: 7)
             ],
-            signups: []
+            signups: [],
+            imageName: "IMG_5002"
         ),
         Farm(
             id: "farm-jerusalem",
@@ -200,7 +205,8 @@ extension Farm {
                 SampleData.range(daysFromNow: -10, length: 5),
                 SampleData.range(daysFromNow: 15, length: 10)
             ],
-            signups: SampleData.signups.filter { $0.farmID == "farm-jerusalem" }
+            signups: SampleData.signups.filter { $0.farmID == "farm-jerusalem" },
+            imageName: "IMG_6409"
         ),
         Farm(
             id: "farm-haifa",
@@ -213,7 +219,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: 2, length: 18)
             ],
-            signups: []
+            signups: [],
+            imageName: "IMG_8127"
         ),
         Farm(
             id: "farm-jordan",
@@ -226,7 +233,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: -3, length: 30)
             ],
-            signups: []
+            signups: [],
+            imageName: "IMG_1086"
         ),
         Farm(
             id: "farm-eilat",
@@ -239,7 +247,8 @@ extension Farm {
             availability: [
                 SampleData.range(daysFromNow: 7, length: 14)
             ],
-            signups: []
+            signups: [],
+            imageName: "IMG_4985"
         )
     ]
 }

@@ -20,19 +20,34 @@ struct FarmMapView: View {
     let farms: [Farm]
 
     var body: some View {
-        Map(position: $cameraPosition, selection: $selectedFarm) {
+        Map(position: $cameraPosition) {
             ForEach(farms) { farm in
-                // Native label: farm.name is managed by Map/Annotation; content is just the pin artwork
                 Annotation(farm.name, coordinate: farm.coordinate) {
-                    FarmMapMarker(farm: farm)
+                    markerView(for: farm)
                 }
-                .tag(farm as Farm?)
+                .annotationTitles(.hidden)
             }
         }
         .mapControls {
             MapUserLocationButton()
             MapCompass()
         }
+    }
+
+    @ViewBuilder
+    private func markerView(for farm: Farm) -> some View {
+        let isSelected = selectedFarm?.id == farm.id
+
+        FarmMapMarker(farm: farm, isSelected: isSelected)
+            .onTapGesture {
+                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
+                    if isSelected {
+                        selectedFarm = nil
+                    } else {
+                        selectedFarm = farm
+                    }
+                }
+            }
     }
 }
 

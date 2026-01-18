@@ -19,7 +19,7 @@ struct MapLabel: View {
             .padding(.vertical, 4)
             .background(
                 Capsule()  
-                    .fill(.green.opacity(0.9))
+                    .fill(Color("Highland"))
                     .shadow(color: .black.opacity(0.3), radius: 2, x: 0, y: 1)
             )
         

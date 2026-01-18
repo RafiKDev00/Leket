@@ -5,12 +5,24 @@
 //  Created by RJ  Kigner on 1/18/26.
 //
 
-struct FarmListView: view {
+import SwiftUI
+import MapKit
+
+struct FarmListView: View {
+    let farms: [Farm]
+
     var body: some View {
-        Text("Hello, World!")
+        ScrollView {
+            LazyVStack(spacing: 12) {
+                ForEach(farms) { farm in
+                    FarmListCard(farm: farm)
+                }
+            }
+            .padding()
+        }
     }
 }
 
 #Preview {
-    FarmListView()
+    FarmListView(farms: Farm.sampleFarms)
 }
