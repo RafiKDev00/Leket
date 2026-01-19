@@ -10,14 +10,32 @@ import MapKit
 
 struct FarmListCard: View {
     let farm: Farm
+    var isSignedUp: Bool = false
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Image(farm.imageName)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 140)
-                .clipped()
+            ZStack(alignment: .topTrailing) {
+                Image(farm.imageName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 140)
+                    .clipped()
+
+                if isSignedUp {
+                    HStack(spacing: 4) {
+                        Image(systemName: "checkmark.circle.fill")
+                        Text("Signed Up")
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 6)
+                    .background(Color("Highland"))
+                    .cornerRadius(8)
+                    .padding(8)
+                }
+            }
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(farm.name)
@@ -45,7 +63,7 @@ struct FarmListCard: View {
             .padding()
         }
         .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .clipShape(RoundedRectangle(cornerRadius: 24))
         .shadow(color: .black.opacity(0.15), radius: 6, x: 0, y: 3)
     }
 }

@@ -10,6 +10,7 @@ import MapKit
 
 struct FarmMapView: View {
     @State private var selectedFarm: Farm?
+    @State private var sheetFarm: Farm?
     @State private var cameraPosition: MapCameraPosition = .region(
         MKCoordinateRegion(
             center: CLLocationCoordinate2D(latitude: 31.5, longitude: 35.0),
@@ -32,22 +33,41 @@ struct FarmMapView: View {
             MapUserLocationButton()
             MapCompass()
         }
+        .sheet(item: $sheetFarm) { farm in
+            FarmDetailSheet(farm: farm, onClose: {
+                sheetFarm = nil
+            })
+        }
     }
 
     @ViewBuilder
     private func markerView(for farm: Farm) -> some View {
         let isSelected = selectedFarm?.id == farm.id
 
-        FarmMapMarker(farm: farm, isSelected: isSelected)
-            .onTapGesture {
-                withAnimation(.spring(response: 0.35, dampingFraction: 0.75)) {
-                    if isSelected {
-                        selectedFarm = nil
-                    } else {
-                        selectedFarm = farm
-                    }
+        FarmMapMarker(
+            farm: farm,
+            isSelected: isSelected,
+            onClose: {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    selectedFarm = nil
+                }
+            },
+            onCardTap: {
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    selectedFarm = nil
+                }
+                sheetFarm = farm
+            }
+        )
+        .onTapGesture {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                if isSelected {
+                    selectedFarm = nil
+                } else {
+                    selectedFarm = farm
                 }
             }
+        }
     }
 }
 

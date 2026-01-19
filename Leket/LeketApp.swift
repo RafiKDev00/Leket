@@ -11,11 +11,13 @@ import CoreData
 @main
 struct LeketApp: App {
     let persistenceController = PersistenceController.shared
+    @State private var appSession = AppSession()
 
     var body: some Scene {
         WindowGroup {
             ContentView()
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(appSession)
         }
     }
 }

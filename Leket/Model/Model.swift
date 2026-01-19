@@ -8,6 +8,22 @@
 import SwiftUI
 import MapKit
 
+// MARK: - Date Extension
+
+extension Date {
+    var dayKey: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.string(from: self)
+    }
+
+    static func from(dayKey: String) -> Date? {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter.date(from: dayKey)
+    }
+}
+
 // MARK: - Core domain types
 
 struct Farmer: Identifiable, Hashable {
@@ -50,6 +66,21 @@ struct VolunteerSignup: Identifiable, Hashable {
     let status: SignupStatus
 }
 
+struct FarmDay: Identifiable, Hashable {
+    let id: String              // "farm-id_2026-01-20" format
+    let date: Date
+    var isOpen: Bool            // Can volunteers sign up?
+    var volunteersNeeded: Int
+    var tasks: [String]
+    var signups: [VolunteerSignup]
+
+    var signupCount: Int { signups.count }
+    var spotsRemaining: Int { max(0, volunteersNeeded - signupCount) }
+
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    static func == (lhs: FarmDay, rhs: FarmDay) -> Bool { lhs.id == rhs.id }
+}
+
 struct Farm: Identifiable, Hashable {
     let id: String
     let name: String
@@ -61,17 +92,30 @@ struct Farm: Identifiable, Hashable {
     let availability: [DateRange]          // Windows when the farm is accepting volunteers
     let signups: [VolunteerSignup]         // Who signed up and when
     let imageName: String                  // Asset image name for the farm
+    var isPublic: Bool                     // Visible to volunteers?
+    var days: [String: FarmDay]            // Dictionary keyed by date string "yyyy-MM-dd"
 
     // Helper for MapKit
     var location: CLLocationCoordinate2D { coordinate }
 
     // Derived helpers
     func isAcceptingVolunteers(on date: Date = Date()) -> Bool {
-        availability.contains { $0.contains(date) }
+        if let day = days[date.dayKey] {
+            return day.isOpen && day.spotsRemaining > 0
+        }
+        return availability.contains { $0.contains(date) }
     }
 
     func volunteers(on date: Date = Date()) -> [VolunteerSignup] {
-        signups.filter { $0.range.contains(date) }
+        if let day = days[date.dayKey] {
+            return day.signups
+        }
+        return signups.filter { $0.range.contains(date) }
+    }
+
+    // Total signups across all days
+    var totalDaySignups: Int {
+        days.values.reduce(0) { $0 + $1.signupCount }
     }
 
     // Hashable conformance
@@ -149,7 +193,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 30, length: 10)
             ],
             signups: SampleData.signups.filter { $0.farmID == "farm-galilee" },
-            imageName: "IMG_8127"
+            imageName: "IMG_8127",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-negev",
@@ -163,7 +209,9 @@ extension Farm {
                 SampleData.range(daysFromNow: -1, length: 21)
             ],
             signups: SampleData.signups.filter { $0.farmID == "farm-negev" },
-            imageName: "IMG_0209"
+            imageName: "IMG_0209",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-sharon",
@@ -177,7 +225,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 5, length: 12)
             ],
             signups: [],
-            imageName: "IMG_7782"
+            imageName: "IMG_7782",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-golan",
@@ -191,7 +241,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 20, length: 7)
             ],
             signups: [],
-            imageName: "IMG_5002"
+            imageName: "IMG_5002",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-jerusalem",
@@ -206,7 +258,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 15, length: 10)
             ],
             signups: SampleData.signups.filter { $0.farmID == "farm-jerusalem" },
-            imageName: "IMG_6409"
+            imageName: "IMG_6409",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-haifa",
@@ -220,7 +274,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 2, length: 18)
             ],
             signups: [],
-            imageName: "IMG_8127"
+            imageName: "IMG_8127",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-jordan",
@@ -234,7 +290,9 @@ extension Farm {
                 SampleData.range(daysFromNow: -3, length: 30)
             ],
             signups: [],
-            imageName: "IMG_1086"
+            imageName: "IMG_1086",
+            isPublic: true,
+            days: [:]
         ),
         Farm(
             id: "farm-eilat",
@@ -248,7 +306,9 @@ extension Farm {
                 SampleData.range(daysFromNow: 7, length: 14)
             ],
             signups: [],
-            imageName: "IMG_4985"
+            imageName: "IMG_4985",
+            isPublic: true,
+            days: [:]
         )
     ]
 }
